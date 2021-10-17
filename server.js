@@ -18,8 +18,10 @@ var index = require('./routes/index');
 
 var authenticate = require('./routes/authenticate');
 
+var item = require('./routes/item');
 
-var port = 8080;
+
+var port = 8900;
 
 var app = express();
 var morgan = require('morgan');
@@ -28,7 +30,7 @@ var morgan = require('morgan');
 //After lots of googling I decided to npm install express and add
 app.use(cors())
 
-app.set('port', (process.env.PORT || 8080));
+app.set('port', (process.env.PORT || 8900));
 
 morgan.token('date', function() {
     var p = new Date().toString().replace(/[A-Z]{3}\+/,'+').split(/ /);
@@ -76,7 +78,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use('/',index);
 
 app.use('/authenticate',authenticate);
-
+app.use('/item',item);
 
 
 app.listen(app.get('port'),function(){

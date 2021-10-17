@@ -13,12 +13,12 @@ var MongoClient = require('mongodb').MongoClient;
 ObjectID = require('mongodb').ObjectID
 
 //Connect to db:
-const uri = "mongodb+srv://owner:mqpbpKs1GfDTiliX@cluster0.t7rll.mongodb.net/tradertex?retryWrites=true&w=majority";
+//const uri = "mongodb+srv://owner:mqpbpKs1GfDTiliX@cluster0.t7rll.mongodb.net/tradertex?retryWrites=true&w=majority";
 //const uri = 'mongodb+srv://expense_admin:AVwC7jKLDsiZWVpz@expense-tracker.rjqyt.mongodb.net/expense_tracker?retryWrites=true&w=majority';
 
 var dbo = null;
 var db = null
-MongoClient.connect(uri, function(err, db) {
+MongoClient.connect(config.db, function(err, db) {
   if (err) throw err;
   console.log("Database connected!");
 
@@ -179,7 +179,7 @@ router.post('/postprofile/',function (req, res, next) {
 
 
 
-    console.log(profile_name)
+   
   //var session = "6096a11139461b286b101389"
 
   console.log("within get postprofile.." + session)

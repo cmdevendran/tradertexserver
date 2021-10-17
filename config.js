@@ -6,8 +6,11 @@ module.exports = {
 },
     'secret': 'sgrestaurant@1234S',
    //'db' : 'mongodb://expense_admin:deva%401234D@ds125906.mlab.com:25906/expense_tracker', 
-    'db':'mongodb+srv://expense_admin:AVwC7jKLDsiZWVpz@expense-tracker.rjqyt.mongodb.net/expense_tracker?retryWrites=true&w=majority',
-    'env': 'DEV',
+   // 'db':'mongodb+srv://expense_admin:AVwC7jKLDsiZWVpz@expense-tracker.rjqyt.mongodb.net/expense_tracker?retryWrites=true&w=majority',
+   'db' : "mongodb+srv://owner:mqpbpKs1GfDTiliX@cluster0.t7rll.mongodb.net/tradertex?retryWrites=true&w=majority",
+
+   
+   'env': 'DEV',
     
    
 // PROD for production environment

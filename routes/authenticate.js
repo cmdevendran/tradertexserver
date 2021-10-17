@@ -5,15 +5,14 @@ var config = require('./../config');
 var jwt    = require('jsonwebtoken');
 //var User = require('./user');
 var bcrypt = require('bcrypt');
-//var db = mongojs('mongodb://user:password@ds161262.mlab.com:61262/sgrestaurant', ['restaurants']);
 var session = require('express-session');
-const { ReplSet } = require('mongodb');
 //var MongoStore = require('connect-mongo')(session)
+var mongo = require('mongodb');
 
 
 
 
-var url = 'mongodb+srv://expense_admin:AVwC7jKLDsiZWVpz@expense-tracker.rjqyt.mongodb.net/expense_tracker?retryWrites=true&w=majority';
+var url = "mongodb+srv://owner:mqpbpKs1GfDTiliX@cluster0.t7rll.mongodb.net/tradertex?retryWrites=true&w=majority";
 
 var db = mongojs(url);
 var schema = mongojs.schema; 
@@ -29,8 +28,9 @@ var MongoClient = require('mongodb').MongoClient;
 var dbo;
 MongoClient.connect(config.db, function(err, db) {
   if (err) throw err;
-  console.log("Database created!");
-  dbo = db.db("expense_tracker");
+  console.log("Database connected!");
+
+  dbo = db.db("tradertex");
 
  
 }); 
@@ -44,27 +44,28 @@ MongoClient.connect(config.db, function(err, db) {
     var new_user = new User({
       username: req.username
     });*/
-    var username = req.body.username;
-    var password = req.body.password;
-    var FirstName = req.body.firstname;
-    var LastName = req.body.lastname;
-    console.log("username : "+req.body.username);
-    console.log("password : "+req.body.password);
+    var username = req.body.mobilenumber;
+    var password = req.body.pinnumber;
+
+    console.log("username : "+req.body.mobilenumber);
+    console.log("password : "+req.body.pinnumber);
 
     var hashpassword = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 
-    dbo.collection('user').findOne({username: username}, function(err, user) {
+    dbo.collection('user').findOne({mobilenumber: username}, function(err, user) {
       if(err){
         console.log(err);
         return res.status(500).send();
       }
      // console.log("before  user : "+JSON.stringify(user));
       if (user) {
+        console.log(" user already exist")
         return res.status(404).send("User Already Exist");
                
       } else{
-
-        dbo.collection('user').insert({username : req.body.username,password : hashpassword, firstname : FirstName, lastname: LastName}, function(err, data){
+        console.log("creating new user")
+        var isodate = new Date().toISOString()
+        dbo.collection('user').insert({mobilenumber : username,pinnumber : hashpassword, profile_created : isodate}, function(err, data){
           if(err){
             console.log(err);
             return res.status(500).send("User Registration Error");
@@ -131,8 +132,8 @@ router.post('/rest/profile', requiresLogin, function(req, res, next) {
   router.post('/rest/login',  function(req, res,next) {
     var credentials = req.body;
     console.log(credentials);
-    var username = req.body.username;
-    var password = req.body.password;
+    var username = req.body.mobilenumber;
+    var password = req.body.pinnumber;
    
     console.log(username + ' '+ password);
     if(username==null || password==null){
@@ -140,8 +141,8 @@ router.post('/rest/profile', requiresLogin, function(req, res, next) {
       return res.status(500).send();
     }
     var hashpassword = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-    console.log(hashpassword);
-    dbo.collection('user').findOne({username: username},{ password :1}, function(err, user) {
+  
+    dbo.collection('user').findOne({mobilenumber: req.body.mobilenumber},{ pinnumber :1}, function(err, user) {
       if(err){
         console.log(err);
         return res.status(500).send();
@@ -149,27 +150,48 @@ router.post('/rest/profile', requiresLogin, function(req, res, next) {
       console.log("before  user : "+JSON.stringify(user));
       if (user) {
         console.log("user: "+JSON.stringify(user));
-        console.log("user password : "+JSON.stringify(user.password));
-        bcrypt.compare(password, user.password, function(err, data) {
+        console.log("hash password : "+ hashpassword);
+        console.log("user password : "+JSON.stringify(user.pinnumber));
+
+
+
+
+  //-------------------
+        bcrypt.compare(password, user.pinnumber, function(err, data) {
+          var isodate = new Date().toISOString()
           if(err){
             console.log(err);
           }
           if(data==true){
+            console.log("creating session for "+user._id)
             //Authenticatio success
             req.session = user._id;
-            dbo.collection('sessions').insert({'session' : user._id}, function(err, d1) {
+            var sessionid ;
+            
+            dbo.collection('sessions').updateOne({'session' : user._id},{'session' : user._id,'lastlogin': isodate},{upsert : true}, function(err, d1) {
+                if(err){
+                  console.log(err)
+                }
+                
+         
+         
 
+          }).then(function(hash){
+            var o_id = new mongo.ObjectID(user._id);
+            dbo.collection('sessions').findOne({'session':o_id},function(err, data){
+              console.log("within getting session "+JSON.stringify(data))
+              sessionid = data
             })
+            return res.status(200).send(data._id);
 
+          })}
 
-           // return res.redirect('/profile');
+          else if (data==false){
 
-            console.log("user data : "+ data);
-           // res.json(data);
-           return res.status(200).send(user._id);
+            return res.status(404).send("password does not match");
           }
-          console.log(data);
-          return res.status(404).send("password does not match");
+          
+         
           
       });
        
