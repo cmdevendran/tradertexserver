@@ -19,7 +19,7 @@ var expense = require('./routes/expense');
 var authenticate = require('./routes/authenticate');
 var trip = require('./routes/trip');
 
-var port = 8900;
+var port = 8080;
 
 var app = express();
 var morgan = require('morgan');
