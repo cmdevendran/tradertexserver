@@ -1,0 +1,29 @@
+{
+  "name": "restaurant",
+  "version": "1.0.0",
+  "description": "sgrestaurant nodejs server",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Devendran",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "connect-mongo": "^2.0.0",
+    "cors": "^2.8.5",
+    "ejs": "^2.5.6",
+    "express": "^4.15.3",
+    "express-jwt": "^5.3.0",
+    "express-session": "^1.15.6",
+    "googleapis": "^72.0.0",
+    "jsonwebtoken": "^7.4.1",
+    "mongodb": "^2.2.30",
+    "mongojs": "^2.4.0",
+    "morgan": "^1.8.2",
+    "nodemon": "^2.0.6",
+    "socket.io": "^2.0.3"
+  }
+}
