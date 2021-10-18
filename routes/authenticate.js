@@ -126,6 +126,11 @@ router.post('/rest/profile', requiresLogin, function(req, res, next) {
     });
   });
 
+  function getUrlValue(val) {
+
+    return val.then((abc) => abc);
+  
+  }
   
 // Login to Mongodb
 
@@ -167,8 +172,20 @@ router.post('/rest/profile', requiresLogin, function(req, res, next) {
             //Authenticatio success
             req.session = user._id;
             var sessionid ;
-            
-            dbo.collection('sessions').updateOne({'session' : user._id},{'session' : user._id,'lastlogin': isodate},{upsert : true}, function(err, d1) {
+            getUrlValue(dbo.collection('sessions').updateOne({'session' : user._id},{'session' : user._id,'lastlogin': isodate},{upsert : true})).then((rs)=>{
+
+              console.log("rs value" + rs)
+              var o_id = new mongo.ObjectID(user._id);
+              dbo.collection('sessions').findOne({'session':o_id},function(err, data){
+                console.log("within getting session "+JSON.stringify(data))
+                sessionid = data
+                return res.status(200).send(data._id);
+
+              })
+             
+
+            })
+            /* dbo.collection('sessions').updateOne({'session' : user._id},{'session' : user._id,'lastlogin': isodate},{upsert : true}, function(err, d1) {
                 if(err){
                   console.log(err)
                 }
@@ -184,7 +201,7 @@ router.post('/rest/profile', requiresLogin, function(req, res, next) {
             })
             return res.status(200).send(data._id);
 
-          })}
+          }) */}
 
           else if (data==false){
 
